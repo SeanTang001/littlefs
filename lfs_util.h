@@ -23,8 +23,16 @@
 // System includes
 #include <stdint.h>
 #include <stdbool.h>
+#ifndef SECUREOS
 #include <string.h>
+#endif
 #include <inttypes.h>
+
+#ifdef SECUREOS
+// SecureOS headers
+#include "string.h"
+#include "memory.h"
+#endif
 
 #ifndef LFS_NO_MALLOC
 #include <stdlib.h>
@@ -36,7 +44,12 @@
         !defined(LFS_NO_WARN) || \
         !defined(LFS_NO_ERROR) || \
         defined(LFS_YES_TRACE)
+#ifndef SECUREOS
 #include <stdio.h>
+#else
+#include "io.h"
+#endif
+
 #endif
 
 #ifdef __cplusplus
@@ -220,6 +233,9 @@ static inline void *lfs_malloc(size_t size) {
 #ifndef LFS_NO_MALLOC
     return malloc(size);
 #else
+    #ifdef SECUREOS
+    return kalloc(size);
+    #endif
     (void)size;
     return NULL;
 #endif
